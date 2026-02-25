@@ -2,6 +2,8 @@ import React from 'react';
 import { Item, Room } from '../types';
 import ItemCard from './ItemCard';
 
+const MAX_VISIBLE = 5;
+
 interface RoomCardProps {
   room: Room;
   items: Item[];
@@ -29,13 +31,16 @@ export default function RoomCard({
   onEditRoom,
   onDeleteRoom,
 }: RoomCardProps) {
+  const visibleItems = focused ? items : items.slice(0, MAX_VISIBLE);
+  const hiddenCount = items.length - MAX_VISIBLE;
+
   return (
     <div className={`room-card ${focused ? 'room-card--focused' : ''}`}>
       <div className="room-card-header">
         <button
           className="room-focus-btn"
           onClick={onFocus}
-          title={focused ? 'Affichage normal' : 'Mettre en avant'}
+          title={focused ? 'Affichage normal' : 'Voir tous les items'}
         >
           <span className="room-emoji">{room.emoji}</span>
           <span className="room-name">{room.name}</span>
@@ -66,16 +71,23 @@ export default function RoomCard({
         {items.length === 0 ? (
           <p className="empty-hint">Aucun item dans cette pièce.</p>
         ) : (
-          items.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              rooms={allRooms}
-              onEdit={onEditItem}
-              onDelete={onDeleteItem}
-              onMove={onMoveItem}
-            />
-          ))
+          <>
+            {visibleItems.map((item) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                rooms={allRooms}
+                onEdit={onEditItem}
+                onDelete={onDeleteItem}
+                onMove={onMoveItem}
+              />
+            ))}
+            {!focused && hiddenCount > 0 && (
+              <button className="room-show-more" onClick={onFocus}>
+                + {hiddenCount} item{hiddenCount > 1 ? 's' : ''} de plus
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

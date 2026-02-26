@@ -1,6 +1,14 @@
 import React, { useRef } from 'react';
 import { Item, Room, STATUS_LABELS, STATUS_COLORS, ItemStatus } from '../types';
 
+const STATUS_ORDER_ALL: ItemStatus[] = [
+  'keep_canada',
+  'transfer_italy',
+  'to_sell',
+  'to_give',
+  'unknown',
+];
+
 interface RoomDetailViewProps {
   rooms: Room[];
   items: Item[];
@@ -8,7 +16,7 @@ interface RoomDetailViewProps {
   onSelectRoom: (id: string) => void;
   onEditItem: (item: Item) => void;
   onDeleteItem: (id: string) => void;
-  onMoveItem: (itemId: string, roomId: string | null) => void;
+  onStatusChange: (itemId: string, status: ItemStatus) => void;
   onAddItem: (roomId: string) => void;
 }
 
@@ -27,7 +35,7 @@ export default function RoomDetailView({
   onSelectRoom,
   onEditItem,
   onDeleteItem,
-  onMoveItem,
+  onStatusChange,
   onAddItem,
 }: RoomDetailViewProps) {
   const printRef = useRef<HTMLDivElement>(null);
@@ -170,16 +178,16 @@ export default function RoomDetailView({
                           <div className="table-actions">
                             <select
                               className="item-move-select"
-                              value={item.roomId ?? ''}
+                              value={item.status}
                               onChange={(e) =>
-                                onMoveItem(item.id, e.target.value || null)
+                                onStatusChange(item.id, e.target.value as ItemStatus)
                               }
-                              title="Déplacer"
+                              title="Changer le statut"
+                              style={{ borderColor: STATUS_COLORS[item.status], color: STATUS_COLORS[item.status] }}
                             >
-                              <option value="">— Non classé —</option>
-                              {rooms.map((r) => (
-                                <option key={r.id} value={r.id}>
-                                  {r.emoji} {r.name}
+                              {STATUS_ORDER_ALL.map((s) => (
+                                <option key={s} value={s}>
+                                  {STATUS_LABELS[s]}
                                 </option>
                               ))}
                             </select>

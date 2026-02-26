@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useInventory } from './context/InventoryContext';
-import { Item, Room } from './types';
+import { Item, Room, ItemStatus } from './types';
 import ItemModal from './components/ItemModal';
 import RoomModal from './components/RoomModal';
 import RoomCard from './components/RoomCard';
@@ -64,6 +64,10 @@ export default function App() {
     } else {
       addItem(data);
     }
+  }
+
+  function changeItemStatus(itemId: string, status: ItemStatus) {
+    updateItem(itemId, { status });
   }
 
   // ------ Room handlers ------
@@ -168,7 +172,7 @@ export default function App() {
                     rooms={rooms}
                     onEdit={openEditItem}
                     onDelete={deleteItem}
-                    onMove={moveItemToRoom}
+                    onStatusChange={changeItemStatus}
                   />
                 ))}
               </div>
@@ -182,7 +186,7 @@ export default function App() {
             rooms={rooms}
             onEditItem={openEditItem}
             onDeleteItem={deleteItem}
-            onMoveItem={moveItemToRoom}
+            onStatusChange={changeItemStatus}
           />
         )}
 
@@ -194,7 +198,7 @@ export default function App() {
             onSelectRoom={setDetailRoomId}
             onEditItem={openEditItem}
             onDeleteItem={deleteItem}
-            onMoveItem={moveItemToRoom}
+            onStatusChange={changeItemStatus}
             onAddItem={openAddItem}
           />
         )}
@@ -221,7 +225,7 @@ export default function App() {
                   onAddItem={openAddItem}
                   onEditItem={openEditItem}
                   onDeleteItem={deleteItem}
-                  onMoveItem={moveItemToRoom}
+                  onStatusChange={changeItemStatus}
                   onEditRoom={openEditRoom}
                   onDeleteRoom={deleteRoom}
                 />

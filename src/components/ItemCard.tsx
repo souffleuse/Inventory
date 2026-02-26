@@ -1,15 +1,23 @@
 import React from 'react';
-import { Item, Room, STATUS_LABELS, STATUS_COLORS } from '../types';
+import { Item, Room, ItemStatus, STATUS_LABELS, STATUS_COLORS } from '../types';
+
+const STATUS_ORDER: ItemStatus[] = [
+  'keep_canada',
+  'transfer_italy',
+  'to_sell',
+  'to_give',
+  'unknown',
+];
 
 interface ItemCardProps {
   item: Item;
   rooms: Room[];
   onEdit: (item: Item) => void;
   onDelete: (id: string) => void;
-  onMove: (itemId: string, roomId: string | null) => void;
+  onStatusChange: (itemId: string, status: ItemStatus) => void;
 }
 
-export default function ItemCard({ item, rooms, onEdit, onDelete, onMove }: ItemCardProps) {
+export default function ItemCard({ item, rooms, onEdit, onDelete, onStatusChange }: ItemCardProps) {
   const color = STATUS_COLORS[item.status];
 
   return (
@@ -18,9 +26,6 @@ export default function ItemCard({ item, rooms, onEdit, onDelete, onMove }: Item
       <div className="item-card-body">
         <div className="item-card-top">
           <span className="item-name">{item.name}</span>
-          <span className="item-badge" style={{ background: color + '22', color }}>
-            {STATUS_LABELS[item.status]}
-          </span>
         </div>
         {item.description && (
           <p className="item-desc">{item.description}</p>
@@ -28,14 +33,14 @@ export default function ItemCard({ item, rooms, onEdit, onDelete, onMove }: Item
         <div className="item-card-actions">
           <select
             className="item-move-select"
-            value={item.roomId ?? ''}
-            onChange={(e) => onMove(item.id, e.target.value || null)}
-            title="Déplacer vers une pièce"
+            value={item.status}
+            onChange={(e) => onStatusChange(item.id, e.target.value as ItemStatus)}
+            title="Changer le statut"
+            style={{ borderColor: color, color }}
           >
-            <option value="">— Non classé —</option>
-            {rooms.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.emoji} {r.name}
+            {STATUS_ORDER.map((s) => (
+              <option key={s} value={s}>
+                {STATUS_LABELS[s]}
               </option>
             ))}
           </select>

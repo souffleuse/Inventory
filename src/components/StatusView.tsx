@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { Item, Room, ItemStatus, STATUS_LABELS, STATUS_COLORS } from '../types';
 
+const STATUS_ORDER_ALL: ItemStatus[] = [
+  'keep_canada',
+  'transfer_italy',
+  'to_sell',
+  'to_give',
+  'unknown',
+];
+
 interface StatusViewProps {
   items: Item[];
   rooms: Room[];
   onEditItem: (item: Item) => void;
   onDeleteItem: (id: string) => void;
-  onMoveItem: (itemId: string, roomId: string | null) => void;
+  onStatusChange: (itemId: string, status: ItemStatus) => void;
 }
 
 const STATUS_ORDER: ItemStatus[] = [
@@ -22,7 +30,7 @@ export default function StatusView({
   rooms,
   onEditItem,
   onDeleteItem,
-  onMoveItem,
+  onStatusChange,
 }: StatusViewProps) {
   const [visibleStatuses, setVisibleStatuses] = useState<Set<ItemStatus>>(
     new Set(STATUS_ORDER)
@@ -173,6 +181,7 @@ export default function StatusView({
                       <th>Nom</th>
                       <th>Description</th>
                       <th>Pièce</th>
+                      <th className="no-print">Statut</th>
                       <th className="no-print">Actions</th>
                     </tr>
                   </thead>
@@ -183,23 +192,25 @@ export default function StatusView({
                         <td className="td-name">{item.name}</td>
                         <td className="td-desc">{item.description || '—'}</td>
                         <td className="td-room">{getRoomLabel(item.roomId)}</td>
+                        <td className="td-status no-print">
+                          <select
+                            className="item-move-select"
+                            value={item.status}
+                            onChange={(e) =>
+                              onStatusChange(item.id, e.target.value as ItemStatus)
+                            }
+                            title="Changer le statut"
+                            style={{ borderColor: STATUS_COLORS[item.status], color: STATUS_COLORS[item.status] }}
+                          >
+                            {STATUS_ORDER_ALL.map((s) => (
+                              <option key={s} value={s}>
+                                {STATUS_LABELS[s]}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
                         <td className="td-actions no-print">
                           <div className="table-actions">
-                            <select
-                              className="item-move-select"
-                              value={item.roomId ?? ''}
-                              onChange={(e) =>
-                                onMoveItem(item.id, e.target.value || null)
-                              }
-                              title="Déplacer"
-                            >
-                              <option value="">— Non classé —</option>
-                              {rooms.map((r) => (
-                                <option key={r.id} value={r.id}>
-                                  {r.emoji} {r.name}
-                                </option>
-                              ))}
-                            </select>
                             <button
                               className="btn-icon"
                               onClick={() => onEditItem(item)}

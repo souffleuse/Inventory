@@ -1,5 +1,5 @@
 import React from 'react';
-import { Item, Room } from '../types';
+import { Item, Room, ItemStatus } from '../types';
 import ItemCard from './ItemCard';
 
 const MAX_VISIBLE = 5;
@@ -13,7 +13,7 @@ interface RoomCardProps {
   onAddItem: (roomId: string) => void;
   onEditItem: (item: Item) => void;
   onDeleteItem: (id: string) => void;
-  onMoveItem: (itemId: string, roomId: string | null) => void;
+  onStatusChange: (itemId: string, status: ItemStatus) => void;
   onEditRoom: (room: Room) => void;
   onDeleteRoom: (id: string) => void;
 }
@@ -27,7 +27,7 @@ export default function RoomCard({
   onAddItem,
   onEditItem,
   onDeleteItem,
-  onMoveItem,
+  onStatusChange,
   onEditRoom,
   onDeleteRoom,
 }: RoomCardProps) {
@@ -79,7 +79,7 @@ export default function RoomCard({
                 rooms={allRooms}
                 onEdit={onEditItem}
                 onDelete={onDeleteItem}
-                onMove={onMoveItem}
+                onStatusChange={onStatusChange}
               />
             ))}
             {!focused && hiddenCount > 0 && (

@@ -918,6 +918,60 @@ body {
 }
 
 /* ===================== PRINT STYLES ===================== */
+/* ── All Rooms Print View ── */
+.all-rooms-section {
+  margin-bottom: 32px;
+}
+
+.all-rooms-room-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface-alt, #f1f5f9);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  border-left: 4px solid var(--border);
+}
+
+.all-rooms-room-emoji {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.all-rooms-room-name {
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+  margin: 0;
+}
+
+.all-rooms-room-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+@media print {
+  .all-rooms-section {
+    page-break-inside: avoid;
+    margin-bottom: 24px;
+  }
+
+  .all-rooms-room-header {
+    background: #e2e8f0 !important;
+    border-radius: 0;
+    padding: 6px 10px;
+    border-left: 4px solid #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .all-rooms-room-name {
+    font-size: 14px;
+  }
+}
+
 @media print {
   /* Hide everything by default */
   body * {

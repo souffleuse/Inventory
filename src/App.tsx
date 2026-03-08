@@ -7,8 +7,9 @@ import RoomCard from './components/RoomCard';
 import ItemCard from './components/ItemCard';
 import RoomDetailView from './components/RoomDetailView';
 import StatusView from './components/StatusView';
+import AllRoomsPrintView from './components/AllRoomsPrintView';
 
-type View = 'all' | 'unclassified' | 'detail' | 'status';
+type View = 'all' | 'unclassified' | 'detail' | 'status' | 'print-all';
 
 export default function App() {
   const {
@@ -149,6 +150,12 @@ export default function App() {
         >
           🏷️ Par statut
         </button>
+        <button
+          className={`nav-btn ${view === 'print-all' ? 'active' : ''}`}
+          onClick={() => setView('print-all')}
+        >
+          🖨️ Toutes les pièces
+        </button>
       </nav>
 
       {/* ===== MAIN ===== */}
@@ -187,6 +194,13 @@ export default function App() {
             onEditItem={openEditItem}
             onDeleteItem={deleteItem}
             onStatusChange={changeItemStatus}
+          />
+        )}
+
+        {view === 'print-all' && (
+          <AllRoomsPrintView
+            rooms={rooms}
+            items={items}
           />
         )}
 

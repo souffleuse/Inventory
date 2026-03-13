@@ -3,17 +3,11 @@ services:
     build: .
     container_name: inventory
     hostname: inventory
-    # No ports exposed — access via http://inventory through shared nginx
+    ports:
+      - "8080:80"
     volumes:
       # Persist JSON data outside the container
       - ./data:/app/data
     environment:
       - PORT=80
     restart: unless-stopped
-    networks:
-      - proxy-net
-
-networks:
-  proxy-net:
-    external: true
-    name: movie-file-name-cleaner_video-renamer-net

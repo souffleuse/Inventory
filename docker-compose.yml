@@ -11,3 +11,9 @@ services:
     environment:
       - PORT=80
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+        reservations:
+          memory: 64m

@@ -165,12 +165,10 @@ graph TD
     Nginx["🔀 Reverse Proxy\n(nginx)"]
     User["👤 Utilisateur"]
 
-    User -->|http://inventory| Nginx
-    Nginx -->|proxy_pass| Docker
+    User -->|Utilise le navigateur| Browser
+    Browser -->|http://inventory\n(GET /, GET/POST /api/inventory)| Nginx
+    Nginx -->|proxy_pass vers le conteneur| Docker
     Docker --> Express
-    Browser -->|GET / (assets statiques)| Express
-    Browser -->|GET /api/inventory| Express
-    Browser -->|POST /api/inventory| Express
     Express -->|Lecture / Écriture| JSON
 ```
 

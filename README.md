@@ -4,6 +4,26 @@ Application web pour gérer l'inventaire de vos biens par pièce, avec gestion d
 
 ---
 
+## 🌍 Contexte & motivation
+
+Nous avons vendu notre maison au Canada et tout notre équipement se retrouve en entrepôt, car nous souhaitons nous installer à l'étranger. La question qui revenait sans cesse : *qu'est-ce qu'on a, et qu'est-ce qu'on en fait ?* Est-ce qu'on vend ? On donne parce que ça n'a plus vraiment de valeur ? On garde au Canada pour un éventuel retour ? Ou on le met dans un conteneur pour l'apporter outre-mer ?
+
+Cette app est née de ce besoin concret : faire le point sur ce qu'on possède, pièce par pièce, sans avoir à retourner physiquement dans un entrepôt qui déborde — et où tout n'est de toute façon pas accessible.
+
+---
+
+## 💡 Pourquoi cette approche ?
+
+Pas question de se soucier d'une base de données : la gestion de l'inventaire se fait dans un simple fichier JSON local. L'objectif n'était pas de partager l'accès à grande échelle, mais de le rendre disponible à la maison via Docker — comme ça, mon épouse et moi pouvons y accéder à tout moment, dès qu'on se rappelle quelque chose qu'on possède, sans nécessairement aller fouiller dans l'entrepôt.
+
+L'idée est de reconstituer l'inventaire pièce par pièce, en associant un statut à chaque item, en s'aidant de photos et de souvenirs de ce qui se trouvait dans la maison. Idéalement, on aurait tout rempli avant le déménagement — mais à l'époque, on n'avait pas encore décidé de quitter le pays ! On s'adapte.
+
+Les listes imprimables par pièce, ou en totalité, permettent d'avoir une vue d'ensemble facilement consultable.
+
+J'aurais pu bâtir une API CRUD complète, mais j'ai privilégié la simplicité locale. C'est un mini-projet personnel, pratique et sans prétention.
+
+---
+
 ## 📸 Aperçu
 
 ### Vue d'ensemble — Toutes les pièces
@@ -130,6 +150,28 @@ networks:
   proxy-net:
     external: true
     name: <nom-du-reseau-nginx>
+```
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    Browser["🌐 Navigateur\n(React + Vite)"]
+    Express["⚙️ Serveur Express\n(server.cjs :80)"]
+    JSON["📄 inventory.json\n(data/)"]
+    Docker["🐳 Conteneur Docker"]
+    Nginx["🔀 Reverse Proxy\n(nginx)"]
+    User["👤 Utilisateur"]
+
+    User -->|http://inventory| Nginx
+    Nginx -->|proxy_pass| Docker
+    Docker --> Express
+    Express -->|Sert les fichiers statiques| Browser
+    Browser -->|GET /api/inventory| Express
+    Browser -->|POST /api/inventory| Express
+    Express -->|Lecture / Écriture| JSON
 ```
 
 ---

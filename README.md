@@ -168,7 +168,7 @@ graph TD
     User -->|http://inventory| Nginx
     Nginx -->|proxy_pass| Docker
     Docker --> Express
-    Express -->|Sert les fichiers statiques| Browser
+    Browser -->|GET / (assets statiques)| Express
     Browser -->|GET /api/inventory| Express
     Browser -->|POST /api/inventory| Express
     Express -->|Lecture / Écriture| JSON

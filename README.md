@@ -158,18 +158,20 @@ networks:
 
 ```mermaid
 graph TD
-    Browser["🌐 Frontend React\n(build Vite)"]
-    Express["⚙️ Serveur Express\n(server.cjs :80)"]
-    JSON["📄 inventory.json\n(data/)"]
-    Docker["🐳 Conteneur Docker"]
-    Nginx["🔀 Reverse Proxy\n(nginx)"]
     User["👤 Utilisateur"]
+    Nginx["🔀 Reverse Proxy nginx"]
+    Docker["🐳 Conteneur Docker"]
+    Express["⚙️ Serveur Express :80"]
+    Browser["🌐 Navigateur React"]
+    JSON["📄 data/inventory.json"]
 
-    User -->|Utilise le navigateur| Browser
-    Browser -->|http://inventory\n(GET /, GET/POST /api/inventory)| Nginx
-    Nginx -->|proxy_pass vers le conteneur| Docker
+    User -->|"http://inventory"| Nginx
+    Nginx -->|proxy_pass| Docker
     Docker --> Express
-    Express -->|Lecture / Écriture| JSON
+    Express -->|fichiers statiques| Browser
+    Browser -->|"GET /api/inventory"| Express
+    Browser -->|"POST /api/inventory"| Express
+    Express -->|lecture / écriture| JSON
 ```
 
 ---

@@ -158,7 +158,7 @@ networks:
 
 ```mermaid
 graph TD
-    Browser["🌐 Navigateur\n(React + Vite)"]
+    Browser["🌐 Frontend React\n(build Vite)"]
     Express["⚙️ Serveur Express\n(server.cjs :80)"]
     JSON["📄 inventory.json\n(data/)"]
     Docker["🐳 Conteneur Docker"]

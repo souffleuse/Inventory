@@ -221,6 +221,7 @@ export default function App() {
             onEditItem={openEditItem}
             onDeleteItem={deleteItem}
             onStatusChange={changeItemStatus}
+            onSoldAmountChange={changeItemSoldAmount}
           />
         )}
 
@@ -240,6 +241,7 @@ export default function App() {
             onEditItem={openEditItem}
             onDeleteItem={deleteItem}
             onStatusChange={changeItemStatus}
+            onSoldAmountChange={changeItemSoldAmount}
             onAddItem={openAddItem}
           />
         )}

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Item, Room, STATUS_LABELS, STATUS_COLORS, ItemStatus } from '../types';
 
 const STATUS_ORDER_ALL: ItemStatus[] = [
@@ -18,6 +18,7 @@ interface RoomDetailViewProps {
   onEditItem: (item: Item) => void;
   onDeleteItem: (id: string) => void;
   onStatusChange: (itemId: string, status: ItemStatus) => void;
+  onSoldAmountChange: (itemId: string, amount: number | undefined) => void;
   onAddItem: (roomId: string) => void;
 }
 
@@ -38,9 +39,31 @@ export default function RoomDetailView({
   onEditItem,
   onDeleteItem,
   onStatusChange,
+  onSoldAmountChange,
   onAddItem,
 }: RoomDetailViewProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const [soldPopup, setSoldPopup] = useState<{ itemId: string; amount: string } | null>(null);
+
+  function handleStatusChange(itemId: string, newStatus: ItemStatus, currentStatus: ItemStatus) {
+    if (newStatus === 'sold' && currentStatus !== 'sold') {
+      setSoldPopup({ itemId, amount: '' });
+    } else {
+      onStatusChange(itemId, newStatus);
+    }
+  }
+
+  function confirmSold() {
+    if (!soldPopup) return;
+    onStatusChange(soldPopup.itemId, 'sold');
+    const val = parseFloat(soldPopup.amount);
+    onSoldAmountChange(soldPopup.itemId, isNaN(val) ? undefined : val);
+    setSoldPopup(null);
+  }
+
+  function cancelSold() {
+    setSoldPopup(null);
+  }
 
   const room = rooms.find((r) => r.id === selectedRoomId) ?? null;
   const roomItems = selectedRoomId
@@ -178,21 +201,42 @@ export default function RoomDetailView({
                         <td className="td-desc">{item.description || '—'}</td>
                         <td className="td-actions no-print">
                           <div className="table-actions">
-                            <select
-                              className="item-move-select"
-                              value={item.status}
-                              onChange={(e) =>
-                                onStatusChange(item.id, e.target.value as ItemStatus)
-                              }
-                              title="Changer le statut"
-                              style={{ borderColor: STATUS_COLORS[item.status], color: STATUS_COLORS[item.status] }}
-                            >
-                              {STATUS_ORDER_ALL.map((s) => (
-                                <option key={s} value={s}>
-                                  {STATUS_LABELS[s]}
-                                </option>
-                              ))}
-                            </select>
+                              <div style={{ position: 'relative' }}>
+                                <select
+                                  className="item-move-select"
+                                  value={item.status}
+                                  onChange={(e) =>
+                                    handleStatusChange(item.id, e.target.value as ItemStatus, item.status)
+                                  }
+                                  title="Changer le statut"
+                                  style={{ borderColor: STATUS_COLORS[item.status], color: STATUS_COLORS[item.status] }}
+                                >
+                                  {STATUS_ORDER_ALL.map((s) => (
+                                    <option key={s} value={s}>
+                                      {STATUS_LABELS[s]}
+                                    </option>
+                                  ))}
+                                </select>
+                                {soldPopup?.itemId === item.id && (
+                                  <div className="sold-popup">
+                                    <span className="sold-popup-label">Montant vendu</span>
+                                    <input
+                                      className="sold-popup-input"
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      value={soldPopup.amount}
+                                      onChange={(e) => setSoldPopup({ ...soldPopup, amount: e.target.value })}
+                                      onKeyDown={(e) => { if (e.key === 'Enter') confirmSold(); if (e.key === 'Escape') cancelSold(); }}
+                                      placeholder="0.00"
+                                      autoFocus
+                                    />
+                                    <span className="sold-popup-currency">$</span>
+                                    <button className="btn-icon sold-popup-confirm" onClick={confirmSold} title="Confirmer">✓</button>
+                                    <button className="btn-icon sold-popup-cancel" onClick={cancelSold} title="Annuler">✕</button>
+                                  </div>
+                                )}
+                              </div>
                             <button
                               className="btn-icon"
                               onClick={() => onEditItem(item)}

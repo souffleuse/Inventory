@@ -16,6 +16,7 @@ interface StatusViewProps {
   onEditItem: (item: Item) => void;
   onDeleteItem: (id: string) => void;
   onStatusChange: (itemId: string, status: ItemStatus) => void;
+  onSoldAmountChange: (itemId: string, amount: number | undefined) => void;
 }
 
 const STATUS_ORDER: ItemStatus[] = [
@@ -33,10 +34,32 @@ export default function StatusView({
   onEditItem,
   onDeleteItem,
   onStatusChange,
+  onSoldAmountChange,
 }: StatusViewProps) {
   const [visibleStatuses, setVisibleStatuses] = useState<Set<ItemStatus>>(
     new Set(STATUS_ORDER)
   );
+  const [soldPopup, setSoldPopup] = useState<{ itemId: string; amount: string } | null>(null);
+
+  function handleStatusChange(itemId: string, newStatus: ItemStatus, currentStatus: ItemStatus) {
+    if (newStatus === 'sold' && currentStatus !== 'sold') {
+      setSoldPopup({ itemId, amount: '' });
+    } else {
+      onStatusChange(itemId, newStatus);
+    }
+  }
+
+  function confirmSold() {
+    if (!soldPopup) return;
+    onStatusChange(soldPopup.itemId, 'sold');
+    const val = parseFloat(soldPopup.amount);
+    onSoldAmountChange(soldPopup.itemId, isNaN(val) ? undefined : val);
+    setSoldPopup(null);
+  }
+
+  function cancelSold() {
+    setSoldPopup(null);
+  }
 
   function toggleStatus(status: ItemStatus) {
     setVisibleStatuses((prev) => {
@@ -210,12 +233,12 @@ export default function StatusView({
                               : '—'}
                           </td>
                         )}
-                        <td className="td-status no-print">
+                        <td className="td-status no-print" style={{ position: 'relative' }}>
                           <select
                             className="item-move-select"
                             value={item.status}
                             onChange={(e) =>
-                              onStatusChange(item.id, e.target.value as ItemStatus)
+                              handleStatusChange(item.id, e.target.value as ItemStatus, item.status)
                             }
                             title="Changer le statut"
                             style={{ borderColor: STATUS_COLORS[item.status], color: STATUS_COLORS[item.status] }}
@@ -226,6 +249,25 @@ export default function StatusView({
                               </option>
                             ))}
                           </select>
+                          {soldPopup?.itemId === item.id && (
+                            <div className="sold-popup">
+                              <span className="sold-popup-label">Montant vendu</span>
+                              <input
+                                className="sold-popup-input"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={soldPopup.amount}
+                                onChange={(e) => setSoldPopup({ ...soldPopup, amount: e.target.value })}
+                                onKeyDown={(e) => { if (e.key === 'Enter') confirmSold(); if (e.key === 'Escape') cancelSold(); }}
+                                placeholder="0.00"
+                                autoFocus
+                              />
+                              <span className="sold-popup-currency">$</span>
+                              <button className="btn-icon sold-popup-confirm" onClick={confirmSold} title="Confirmer">✓</button>
+                              <button className="btn-icon sold-popup-cancel" onClick={cancelSold} title="Annuler">✕</button>
+                            </div>
+                          )}
                         </td>
                         <td className="td-actions no-print">
                           <div className="table-actions">

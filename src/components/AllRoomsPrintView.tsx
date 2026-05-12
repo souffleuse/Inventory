@@ -7,6 +7,7 @@ const STATUS_ORDER: ItemStatus[] = [
   'to_sell',
   'to_give',
   'unknown',
+  'sold',
 ];
 
 interface AllRoomsPrintViewProps {

@@ -7,6 +7,7 @@ const STATUS_ORDER_ALL: ItemStatus[] = [
   'to_sell',
   'to_give',
   'unknown',
+  'sold',
 ];
 
 interface RoomDetailViewProps {
@@ -26,6 +27,7 @@ const STATUS_ORDER: ItemStatus[] = [
   'to_sell',
   'to_give',
   'unknown',
+  'sold',
 ];
 
 export default function RoomDetailView({

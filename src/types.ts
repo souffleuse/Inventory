@@ -3,7 +3,8 @@ export type ItemStatus =
   | 'to_sell'
   | 'to_give'
   | 'keep_canada'
-  | 'transfer_italy';
+  | 'transfer_italy'
+  | 'sold';
 
 export const STATUS_LABELS: Record<ItemStatus, string> = {
   unknown: 'Ne sait pas',
@@ -11,6 +12,7 @@ export const STATUS_LABELS: Record<ItemStatus, string> = {
   to_give: 'À donner',
   keep_canada: 'Garder Canada',
   transfer_italy: 'Transférer Italie',
+  sold: 'Vendu',
 };
 
 export const STATUS_COLORS: Record<ItemStatus, string> = {
@@ -19,6 +21,7 @@ export const STATUS_COLORS: Record<ItemStatus, string> = {
   to_give: '#10b981',
   keep_canada: '#3b82f6',
   transfer_italy: '#8b5cf6',
+  sold: '#ef4444',
 };
 
 export interface Item {
@@ -27,6 +30,7 @@ export interface Item {
   description: string;
   roomId: string | null; // null = non classé
   status: ItemStatus;
+  soldAmount?: number;
   createdAt: string;
 }
 

@@ -11,9 +11,18 @@ services:
     environment:
       - PORT=80
     restart: unless-stopped
+    networks:
+      - default
+      - video-renamer-net
     deploy:
       resources:
         limits:
           memory: 256m
         reservations:
           memory: 64m
+
+networks:
+  default:
+  video-renamer-net:
+    external: true
+    name: movie-file-name-cleaner_video-renamer-net

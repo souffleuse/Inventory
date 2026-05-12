@@ -14,6 +14,7 @@ interface RoomCardProps {
   onEditItem: (item: Item) => void;
   onDeleteItem: (id: string) => void;
   onStatusChange: (itemId: string, status: ItemStatus) => void;
+  onSoldAmountChange: (itemId: string, amount: number | undefined) => void;
   onEditRoom: (room: Room) => void;
   onDeleteRoom: (id: string) => void;
 }
@@ -28,6 +29,7 @@ export default function RoomCard({
   onEditItem,
   onDeleteItem,
   onStatusChange,
+  onSoldAmountChange,
   onEditRoom,
   onDeleteRoom,
 }: RoomCardProps) {
@@ -80,6 +82,7 @@ export default function RoomCard({
                 onEdit={onEditItem}
                 onDelete={onDeleteItem}
                 onStatusChange={onStatusChange}
+                onSoldAmountChange={onSoldAmountChange}
               />
             ))}
             {!focused && hiddenCount > 0 && (

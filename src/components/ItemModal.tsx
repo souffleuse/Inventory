@@ -15,6 +15,7 @@ const EMPTY: Omit<Item, 'id' | 'createdAt'> = {
   description: '',
   roomId: null,
   status: 'unknown',
+  soldAmount: undefined,
 };
 
 export default function ItemModal({
@@ -35,6 +36,7 @@ export default function ItemModal({
           description: initialData.description,
           roomId: initialData.roomId,
           status: initialData.status,
+          soldAmount: initialData.soldAmount,
         });
       } else {
         setForm({ ...EMPTY, roomId: defaultRoomId ?? null });
@@ -103,7 +105,7 @@ export default function ItemModal({
             <select
               value={form.status}
               onChange={(e) =>
-                setForm({ ...form, status: e.target.value as ItemStatus })
+                setForm({ ...form, status: e.target.value as ItemStatus, soldAmount: e.target.value !== 'sold' ? undefined : form.soldAmount })
               }
             >
               {(Object.keys(STATUS_LABELS) as ItemStatus[]).map((s) => (
@@ -113,6 +115,22 @@ export default function ItemModal({
               ))}
             </select>
           </label>
+
+          {form.status === 'sold' && (
+            <label>
+              Montant vendu ($)
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.soldAmount ?? ''}
+                onChange={(e) =>
+                  setForm({ ...form, soldAmount: e.target.value ? parseFloat(e.target.value) : undefined })
+                }
+                placeholder="0.00"
+              />
+            </label>
+          )}
 
           <div className="modal-actions">
             <button type="button" className="btn btn-secondary" onClick={onClose}>

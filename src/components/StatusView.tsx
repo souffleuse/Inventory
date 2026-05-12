@@ -7,6 +7,7 @@ const STATUS_ORDER_ALL: ItemStatus[] = [
   'to_sell',
   'to_give',
   'unknown',
+  'sold',
 ];
 
 interface StatusViewProps {
@@ -23,6 +24,7 @@ const STATUS_ORDER: ItemStatus[] = [
   'to_sell',
   'to_give',
   'unknown',
+  'sold',
 ];
 
 export default function StatusView({
@@ -155,6 +157,9 @@ export default function StatusView({
       ) : (
         activeStatuses.map((status) => {
           const group = items.filter((i) => i.status === status);
+          const soldTotal = status === 'sold'
+            ? group.reduce((sum, i) => sum + (i.soldAmount ?? 0), 0)
+            : null;
           return (
             <div key={status} className="detail-group">
               <div
@@ -167,6 +172,11 @@ export default function StatusView({
                 />
                 <span className="detail-group-label">{STATUS_LABELS[status]}</span>
                 <span className="detail-group-count">{group.length}</span>
+                {soldTotal !== null && (
+                  <span className="detail-group-sold-total">
+                    — Total : {soldTotal.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
+                  </span>
+                )}
               </div>
 
               {group.length === 0 ? (
@@ -181,6 +191,7 @@ export default function StatusView({
                       <th>Nom</th>
                       <th>Description</th>
                       <th>Pièce</th>
+                      {status === 'sold' && <th>Montant</th>}
                       <th className="no-print">Statut</th>
                       <th className="no-print">Actions</th>
                     </tr>
@@ -192,6 +203,13 @@ export default function StatusView({
                         <td className="td-name">{item.name}</td>
                         <td className="td-desc">{item.description || '—'}</td>
                         <td className="td-room">{getRoomLabel(item.roomId)}</td>
+                        {status === 'sold' && (
+                          <td className="td-sold-amount">
+                            {item.soldAmount !== undefined
+                              ? item.soldAmount.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $'
+                              : '—'}
+                          </td>
+                        )}
                         <td className="td-status no-print">
                           <select
                             className="item-move-select"

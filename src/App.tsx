@@ -28,6 +28,7 @@ export default function App() {
   const [view, setView] = useState<View>('all');
   const [focusedRoomId, setFocusedRoomId] = useState<string | null>(null);
   const [detailRoomId, setDetailRoomId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
 
   // Item modal state
   const [itemModalOpen, setItemModalOpen] = useState(false);
@@ -71,6 +72,10 @@ export default function App() {
     updateItem(itemId, { status });
   }
 
+  function changeItemSoldAmount(itemId: string, amount: number | undefined) {
+    updateItem(itemId, { soldAmount: amount });
+  }
+
   // ------ Room handlers ------
   function openAddRoom() {
     setEditingRoom(null);
@@ -95,7 +100,15 @@ export default function App() {
   }
 
   // ------ Data ------
-  const unclassified = items.filter((i) => i.roomId === null);
+  const searchLower = search.trim().toLowerCase();
+  const filteredItems = searchLower
+    ? items.filter(
+        (i) =>
+          i.name.toLowerCase().includes(searchLower) ||
+          i.description.toLowerCase().includes(searchLower)
+      )
+    : items;
+  const unclassified = filteredItems.filter((i) => i.roomId === null);
 
   // Summary stats
   const total = items.length;
@@ -156,6 +169,19 @@ export default function App() {
         >
           🖨️ Toutes les pièces
         </button>
+        <div className="nav-search">
+          <span className="nav-search-icon">🔎</span>
+          <input
+            className="nav-search-input"
+            type="text"
+            placeholder="Rechercher un item…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && (
+            <button className="nav-search-clear" onClick={() => setSearch('')} title="Effacer">✕</button>
+          )}
+        </div>
       </nav>
 
       {/* ===== MAIN ===== */}
@@ -169,7 +195,7 @@ export default function App() {
               </button>
             </div>
             {unclassified.length === 0 ? (
-              <p className="empty-hint">Aucun item non classé. Bravo !</p>
+              <p className="empty-hint">{search ? 'Aucun résultat pour cette recherche.' : 'Aucun item non classé. Bravo !'}</p>
             ) : (
               <div className="item-list">
                 {unclassified.map((item) => (
@@ -180,6 +206,7 @@ export default function App() {
                     onEdit={openEditItem}
                     onDelete={deleteItem}
                     onStatusChange={changeItemStatus}
+                    onSoldAmountChange={changeItemSoldAmount}
                   />
                 ))}
               </div>
@@ -189,7 +216,7 @@ export default function App() {
 
         {view === 'status' && (
           <StatusView
-            items={items}
+            items={filteredItems}
             rooms={rooms}
             onEditItem={openEditItem}
             onDeleteItem={deleteItem}
@@ -200,14 +227,14 @@ export default function App() {
         {view === 'print-all' && (
           <AllRoomsPrintView
             rooms={rooms}
-            items={items}
+            items={filteredItems}
           />
         )}
 
         {view === 'detail' && (
           <RoomDetailView
             rooms={rooms}
-            items={items}
+            items={filteredItems}
             selectedRoomId={detailRoomId}
             onSelectRoom={setDetailRoomId}
             onEditItem={openEditItem}
@@ -232,7 +259,7 @@ export default function App() {
                 <RoomCard
                   key={room.id}
                   room={room}
-                  items={items.filter((i) => i.roomId === room.id)}
+                  items={filteredItems.filter((i) => i.roomId === room.id)}
                   allRooms={rooms}
                   focused={focusedRoomId === room.id}
                   onFocus={() => toggleFocusRoom(room.id)}
@@ -240,6 +267,7 @@ export default function App() {
                   onEditItem={openEditItem}
                   onDeleteItem={deleteItem}
                   onStatusChange={changeItemStatus}
+                  onSoldAmountChange={changeItemSoldAmount}
                   onEditRoom={openEditRoom}
                   onDeleteRoom={deleteRoom}
                 />
